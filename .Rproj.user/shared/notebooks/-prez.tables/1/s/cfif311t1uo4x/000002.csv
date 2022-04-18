@@ -1,0 +1,8 @@
+"0","summary(m1)
+"
+"1","Call: "
+"1","mediate(y = Attraction ~ AVI + (Justice), data = scales)
+"
+"1","
+Direct effect estimates (traditional regression)    (c') X + M on Y 
+"

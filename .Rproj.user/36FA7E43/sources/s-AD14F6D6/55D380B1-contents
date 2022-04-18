@@ -1,0 +1,126 @@
+#libraries                 
+library(psych)
+library(car)
+library(dplyr)
+library(ggplot2)
+library(apaTables)
+library(corrplot)
+library(Hmisc)
+library(ggcorrplot)
+
+
+#import data
+scales <- read.csv("prelim_data/cleaned_scaledata_long.csv", header=TRUE)
+
+
+"##########################
+DATA ANALYSIS:
+descriptive stats (correlations across and between conditions)
+ANOVA
+regression
+mediation
+###########################"
+
+##### first, create data subsets for analyses #####
+corr.df <- scales[,3:14] #df for cor's across conditions
+
+corr.df.AVI <- scales[scales$condition == "AVI",]
+corr.df.AVI <- corr.df.AVI[,4:14]  ##df for cor's for AVI cond
+
+corr.df.trad <- scales[scales$condition == "Traditional",]
+corr.df.trad <- corr.df.trad[,4:14]  ##df for cor's for AVI cond
+
+
+##### descriptive statistics (correlations across and between conditions) #####
+corr.matrix <- round(cor(corr.df, use = "complete.obs"),2) 
+ggcorrplot(corr.matrix, lab=TRUE) #everything is positively correlated with everything
+
+corr.matrix.AVI <- round(cor(corr.df.AVI, use = "complete.obs"),2) 
+ggcorrplot(corr.matrix.AVI, lab=TRUE)
+
+corr.matrix.trad <- round(cor(corr.df.trad, use = "complete.obs"),2) 
+ggcorrplot(corr.matrix.trad, lab=TRUE)
+
+rm(cor, corr.df, corr.df.AVI, corr.df.trad, corr.matrix, corr.matrix.AVI, corr.matrix.trad)
+
+
+  
+## looking at variables by groups
+desc_orgjust <- scales %>% 
+  group_by(condition) %>% 
+  summarise(count = length(orgjust),
+            means= mean(orgjust),
+            SDs = sd(orgjust))
+
+desc_orgatrct <- scales %>% 
+  group_by(condition) %>% 
+  summarise(count = length(orgatrct),
+            means= mean(orgatrct),
+            SDs = sd(orgatrct))
+desc_orgjust
+desc_orgatrct
+
+
+rm(desc_cond, desc_orgatrct, desc_orgjust)
+
+
+###### ANOVA #####
+aov1<- aov(orgjust ~ condition + Error(id/condition), data = scales) #Error(id/condition) makes this a within-subjects ANOVA
+summary(aov1)
+
+aov2 <- aov(innovate ~ condition + Error(id/condition), data=scales)
+summary(aov2)
+
+aov3 <- aov(support ~ condition + Error(id/condition), data=scales)
+summary(aov3)
+
+aov4 <- aov(compete ~ condition + Error(id/condition), data=scales)
+summary(aov4)
+
+aov5 <- aov(socresp ~ condition + Error(id/condition), data=scales)
+summary(aov5)
+
+aov6 <- aov(orgatrct ~ condition + Error(id/condition), data=scales)
+summary(aov6)
+
+rm(aov1, aov2, aov3, aov4, aov5, aov6)
+
+
+###### REGRESSION ######
+mod1 <- lm(orgatrct ~ orgjust + innovate + support + socresp + compete, data = scales) #see stats notes for categorical predictor
+summary(mod1)
+
+
+##### MEDIATION #####
+
+#simple mediation models
+m1 <- mediate(orgatrct ~ AVI.id + (orgjust), data=scales) 
+summary(m1)
+
+m2 <- mediate(orgatrct ~ AVI.id + (interjust), data=scales)
+summary(m2)
+
+m3 <- mediate(orgatrct ~ AVI.id + (procjust), data=scales)
+summary(m3)
+
+m4 <- mediate(orgatrct ~ AVI.id + (innovate), data=scales)
+summary(m4)
+
+m5 <- mediate(orgatrct ~ AVI.id + (support), data=scales)
+summary(m5)
+
+m6 <- mediate(orgatrct ~ AVI.id + (compete), data=scales)
+summary(m6)
+
+m7 <- mediate(orgatrct ~ AVI.id + (socresp), data=scales)
+summary(m7)
+
+#multiple mediation model
+mm1 <- mediate(orgatrct ~ AVI.id + (orgjust) + (innovate), data=scales)
+summary(mm1)
+.
+.
+.
+
+mm.max <- mediate(orgatrct ~ AVI.id + (interjust) + (procjust) + (innovate) + (socresp) + (support) + (compete), data=scales)
+summary(mm1)

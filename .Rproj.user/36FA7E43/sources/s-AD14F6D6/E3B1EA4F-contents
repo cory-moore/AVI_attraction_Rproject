@@ -1,0 +1,224 @@
+#libraries
+library(careless)
+library(tidyr)
+library(dplyr)
+library(reshape2)
+
+
+#import data
+df <- read.csv("data/data_04.13.22.csv", header=TRUE)
+
+
+"DATA PREPARATION FROM RAW FILE
+-Delete unnecessary rows
+-Delete unnecessary columns
+-Delete cases that fail ATCs
+-Screen extremely fast response
+-Recode response options
+-Change variable classes
+-Recode reverse scored items
+-Screen careless responding
+-Restructure dataframes 
+-Compute scale scores
+-create subsets
+-create indicator variable for cond.
+-Export to CSV files
+"
+
+## DELETE ROWS ##
+# Delete unnecessary rows ##
+df <- slice(df, -c(1:2))
+
+# Delete all cases that did not agree to consent #
+df <- subset(df, IC!="No, I do not want to be in this research study.")
+
+# Delete cases that were practice runs by researchers #
+df <- subset(df, JOB1!="cory test" & JOB1!="a")
+
+
+
+## DELETE COLUMNS ##
+df <- df %>%
+  select(-c(StartDate,
+            EndDate,
+            Status,
+            IPAddress,
+            Progress,
+            Finished,
+            RecordedDate,
+            ResponseId,
+            RecipientLastName,
+            RecipientFirstName,
+            RecipientEmail,
+            ExternalReference,
+            LocationLatitude,
+            LocationLongitude,
+            DistributionChannel,
+            UserLanguage,
+            IC,
+            TIMEA_First.Click,
+            TIMEA_Last.Click,
+            TIMEA_Page.Submit,
+            TIMEA_Click.Count,
+            TIMEB_First.Click,
+            TIMEB_Last.Click,
+            TIMEB_Page.Submit,
+            TIMEB_Click.Count,
+            ATC3,
+            GROUP))
+
+
+## DELETE CASES THAT FAIL ATCs ##             <------ consider changing to 3 out of 4 (the breakdown is odd: ~33 missed                                                         AT1, ~15 missed ATC2, ~3-5 missed ATC4 and OCP1B_17 respectively)
+df <- subset(df, 
+               ATC1=="Strongly agree" & 
+               ATC2=="Somewhat disagree" & 
+               ATC4=="Neither agree nor disagree" & 
+               OCP1B_17=="Very much") 
+
+
+## DELETE FAST RESPONSE ##
+df$Duration..in.seconds. <- as.numeric(df$Duration..in.seconds.)
+df <- df %>% 
+  filter(Duration..in.seconds. > 300)
+
+# delete ATCs and Duration columns
+df <- df %>%
+  select(-c(Duration..in.seconds.,
+            ATC1,
+            ATC2,
+            ATC4,
+            OCP1B_17))
+
+
+### RECODE RESPONSE OPTIONS ###
+df[df=="Strongly disagree"] <- 1
+df[df=="Somewhat disagree"] <- 2
+df[df=="Neither agree nor disagree"] <-3
+df[df=="Somewhat agree"] <- 4
+df[df=="Strongly agree"] <- 5
+df[df=="Not at all"] <- 1
+df[df=="Minimally"] <- 2
+df[df=="Moderately"] <- 3
+df[df=="Considerably"] <- 4
+df[df=="Very much"] <- 5
+
+
+
+### CHANGE VARIABLE CLASSES ###
+df[,2:99] <- lapply(df[,2:99], as.numeric)
+
+
+### RECODE REVERSE SCORED ITEMS ###
+df$GA1A <- 6 - df$GA1A
+df$GA1B <- 6 - df$GA1B
+
+### SCREEN CARELESS RESPONSE #
+longstring <- longstring(df[,2:99], avg=TRUE)
+boxplot(longstring)
+longstring
+ls <- longstring$longstr
+df$ls <- ls #bind longstring values to df 
+names(df)
+
+df <- df %>% #deletes cases with longstrings >= 15
+  filter(ls < 15)
+
+df$ls <- NULL #remove ls column
+rm(ls, longstring)
+
+
+### RESTRUCTURE DATAFRAME / CREATE SUBSETS ###
+#create item and demo subset 
+items <- df[,2:99]
+demogr <- df[c(1, 100:115)]
+
+
+
+### COMPUTE (MEAN) SCALE SCORES ###
+items$A_procjust <- round(with(items,(TBD1A+TBD2A+CJR1A+PJR1A+OTP1A+COA1A+COA2A+COA3A+RO1A) / 9),2) #procedural justice A
+
+items$A_interjust <- round(with(items, (TRM1A+TRM2A+TRM3A+TRM4A+TWC1A+TWC2A+TWC3A+TWC4A+TWC5A) / 9),2) #interpersonal justice A
+
+items$A_orgjust <- round(with(items, (A_procjust + A_interjust) / 2),2) #organizational justice A
+
+items$A_genatrct <- round(with(items, (GA1A+GA2A+GA3A+GA4A+GA5A) / 5),2) #general attraction A
+
+items$A_intpurs <- round(with(items, (IP1A+IP2A+IP3A+IP4A+IP5A) / 5),2) #intent to pursue A
+
+items$A_prest <- round(with(items, (PRS1A+PRS2A+PRS3A+PRS4A+PRS5A) / 5),2) #prestige A
+
+items$A_orgatrct <- round(with(items, (A_genatrct+A_intpurs+A_prest) / 3),2) #organizational attraction A
+
+items$A_compete <- round(with(items, (OCP1A_1+OCP1A_2+OCP1A_3+OCP1A_4) / 4),2) #competitiveness A
+
+items$A_socresp <- round(with(items, (OCP1A_5+OCP1A_6+OCP1A_7+OCP1A_8) / 4),2) #social responsibility A
+
+items$A_support <- round(with(items, (OCP1A_9+OCP1A_10+OCP1A_11+OCP1A_12) / 4),2) #supportiveness A
+
+items$A_innovate <- round(with(items, (OCP1A_13+OCP1A_14+OCP1A_15+OCP1A_16) / 4),2) #innovativeness A
+
+items$B_procjust <- round(with(items,(TBD1B+TBD2B+CJR1B+PJR1B+OTP1B+COA1B+COA2B+COA3B+RO1B) / 9),2) #procedural justice B
+
+items$B_interjust <- round(with(items, (TRM1B+TRM2B+TRM3B+TRM4B+TWC1B+TWC2B+TWC3B+TWC4B+TWC5B) / 9),2) #interpersonal justice B
+
+items$B_orgjust <- round(with(items, (B_procjust + B_interjust) / 2),2) #organizational justice B
+
+items$B_genatrct <- round(with(items, (GA1B+GA2B+GA3B+GA4B+GA5B) / 5),2) #general attraction B
+
+items$B_intpurs <- round(with(items, (IP1B+IP2B+IP3B+IP4B+IP5B) / 5),2) #intent to pursue B
+
+items$B_prest <- round(with(items, (PRS1B+PRS2B+PRS3B+PRS4B+PRS5B) / 5),2) #prestige B
+
+items$B_orgatrct <- round(with(items, (B_genatrct+B_intpurs+B_prest) / 3),2) #organizational attraction B
+
+items$B_compete <- round(with(items, (OCP1B_1+OCP1B_2+OCP1B_3+OCP1B_4) / 4),2) #competitiveness B
+
+items$B_socresp <- round(with(items, (OCP1B_5+OCP1B_6+OCP1B_7+OCP1B_8) / 4),2) #social responsibility B
+
+items$B_support <- round(with(items, (OCP1B_9+OCP1B_10+OCP1B_11+OCP1B_12) / 4),2) #supportiveness B
+
+items$B_innovate <- round(with(items, (OCP1B_13+OCP1B_14+OCP1B_15+OCP1B_16) / 4),2) #innovativeness B
+
+
+
+#### create scale subset
+scales.wide <- items[,99:120]
+id <- 1:130 #match # of rows in scales.wide before moving forward
+scales.wide$id <- id #creating ID to track subject
+
+long <- scales.wide %>% #step 1. create long df
+  pivot_longer(c(A_procjust:B_innovate),
+               names_to = c(".value","scale"), names_sep = "_")
+
+longer <- melt(long, id=c("id","scale")) #step 2. create longer df
+
+scales.long <- spread(longer, key = scale, value=value) #step 3. spread df by scale
+
+# reorder columns
+col_order <- c("id", "variable", "procjust", "interjust", "orgjust", "genatrct", "intpurs", "prest", "orgatrct", "compete", "socresp", "support", "innovate")
+
+scales.long <- scales.long[, col_order]
+
+# change name of column from 'variable' to 'condition'
+scales.long <- rename(scales.long, condition = variable)
+
+# rename levels of 'condition' 
+levels(scales.long$condition) <- c("AVI", "Traditional")
+
+# create indicator variable for condition
+scales.long$AVI.id <- ifelse(scales.long$condition == "AVI", 1, 0)
+
+scales.long <- scales.long %>% # relocates AVI.id column to more convenient spot in df
+  relocate(AVI.id, .before = procjust)
+
+#remove extra columns from 'items' data frame before export
+items <- items %>%
+  select(-c(99:120))
+
+rm(df, long, longer)
+
+##### Export dataframes to CSV files to be imported for analysis in other scripts
+write.csv(demogr, "data/demographic_data.csv", row.names = FALSE)
+write.csv(items, "data/cleaned_itemdata.csv", row.names = FALSE)
+write.csv(scales.wide, "data/cleaned_scaledata_wide.csv", row.names = FALSE)
+write.csv(scales.long, "data/cleaned_scaledata_long.csv", row.names = FALSE)

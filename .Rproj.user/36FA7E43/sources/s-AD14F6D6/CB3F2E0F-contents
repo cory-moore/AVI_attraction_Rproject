@@ -1,0 +1,18 @@
+
+## looking at variables by groups  ## NOT REQUIRED
+desc_orgjust <- scales %>% 
+  group_by(condition) %>% 
+  summarise(count = length(Organizational_Justice),
+            means= mean(Organizational_Justice),
+            SDs = sd(Organizational_Justice))
+
+desc_orgatrct <- scales %>% 
+  group_by(condition) %>% 
+  summarise(count = length(Organizational_Attraction),
+            means= mean(Organizational_Attraction),
+            SDs = sd(Organizational_Attraction))
+desc_orgjust
+desc_orgatrct
+
+
+rm(desc_orgatrct, desc_orgjust)

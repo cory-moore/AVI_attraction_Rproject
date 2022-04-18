@@ -1,0 +1,5 @@
+#libraries 
+
+
+#import data
+demo <- read.csv("prelim_data/prelim_subset_demographics_feedback.csv", header=TRUE)

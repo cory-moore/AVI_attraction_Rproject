@@ -1,0 +1,152 @@
+#libraries                 
+library(psych)
+library(car)
+library(dplyr)
+library(ggplot2)
+library(apaTables)
+library(corrplot)
+library(Hmisc)
+library(ggcorrplot)
+
+
+#import data
+scales <- read.csv("data/cleaned_scaledata_long.csv", header=TRUE)
+
+scales <- scales %>%
+  rename(id = id, 
+         condition = condition,
+         AVI = AVI.id,
+         Procedural_Justice=procjust,
+         Interpersonal_Justice=interjust,
+         Organizational_Justice=orgjust,
+         General_Attractiveness = genatrct,
+         Intent_to_Pursue = intpurs, 
+         Prestige = prest,
+         Organizational_Attraction = orgatrct,
+         Competiveness =compete,
+         Social_Responsibility = socresp,
+         Supportiveness = support,
+         Innovativeness = innovate)
+
+
+"##########################
+DATA ANALYSIS:
+correlations
+regression
+mediation
+###########################"
+
+##### first, create data subsets for correlations #####
+prim.corr.df <- subset(scales, 
+                       select=c(AVI,
+                                Organizational_Justice,
+                                Organizational_Attraction,
+                                Competiveness,
+                                Social_Responsibility,
+                                Supportiveness,
+                                Innovativeness)) #df for cor's both conditions
+
+corr.df <- scales[,3:14] #subscales both conditions
+
+corr.df.AVI <- scales[scales$condition == "AVI",] ##dfs for cor's for AVI cond
+corr.df.AVI <- corr.df.AVI[,4:14] ## subscales
+corr.df.AVI <- subset(corr.df.AVI, 
+                      select=c(Organizational_Justice,
+                               Organizational_Attraction,
+                               Competiveness,
+                               Social_Responsibility,
+                               Supportiveness,
+                               Innovativeness)) #broad scales
+
+corr.df.trad <- scales[scales$condition == "Traditional",] ##df for cor's for AVI cond
+corr.df.trad <- corr.df.trad[,4:14] #subscales
+corr.df.trad <- subset(corr.df.trad, 
+                       select=c(Organizational_Justice,
+                                Organizational_Attraction,
+                                Competiveness,
+                                Social_Responsibility,
+                                Supportiveness,
+                                Innovativeness)) #broad scales
+
+
+
+##### correlation analyses #####
+prim.corr.matrix <- round(cor(prim.corr.df, use = "complete.obs"),3)
+ggcorrplot(prim.corr.matrix, title = "Full Scales", lab=TRUE) 
+prim.corr.matrix
+
+corr.matrix <- round(cor(corr.df, use = "complete.obs"),3) 
+ggcorrplot(corr.matrix, title = "Subscales", lab=TRUE) 
+corr.matrix
+
+corr.matrix.AVI <- round(cor(corr.df.AVI, use = "complete.obs"),3) 
+ggcorrplot(corr.matrix.AVI, title="Full Scales, AVI Condition", lab=TRUE)
+corr.matrix.AVI
+
+corr.matrix.trad <- round(cor(corr.df.trad, use = "complete.obs"),3) 
+ggcorrplot(corr.matrix.trad, title="Full Scales, Traditional Condition", lab=TRUE)
+corr.df.trad
+
+
+
+#excel
+write.xlsx(as.data.frame(prim.corr.matrix), file="output/output.xlsx",sheetName="cor.primary", col.names=TRUE,row.names=TRUE,append=TRUE)
+
+write.xlsx(as.data.frame(corr.matrix), file="output/output.xlsx",sheetName="cor.subscales",col.names=TRUE,row.names=TRUE,append=TRUE)
+
+write.xlsx(as.data.frame(corr.matrix.AVI), file="output/output.xlsx",sheetName="cor.AVI",col.names=TRUE,row.names=TRUE,append=TRUE)
+
+write.xlsx(as.data.frame(corr.matrix.trad), file="output/output.xlsx",sheetName="cor.Trad",col.names=TRUE,row.names=TRUE,append=TRUE)
+
+
+rm(prim.corr.df, cor, corr.df, corr.df.AVI, corr.df.trad, corr.matrix, corr.matrix.AVI, corr.matrix.trad, prim.corr.matrix)
+
+
+
+###### REGRESSIONs ######
+max.mod <- lm(Organizational_Attraction ~ AVI + Organizational_Justice + Innovativeness + Supportiveness + Social_Responsibility + Competiveness, data = scales) 
+summary(max.mod)
+anova(max.mod)
+
+mod1 <- lm(Organizational_Attraction ~ AVI, data=scales)
+summary(mod1)
+anova(mod1)
+
+mod2 <- lm(Organizational_Attraction ~ Procedural_Justice, data=scales)
+summary(mod2)
+
+
+##### MEDIATIONs #####
+
+#simple mediation models
+m1 <- mediate(Organizational_Attraction ~ AVI + (Organizational_Justice), data=scales) 
+summary(m1)
+
+m2 <- mediate(Organizational_Attraction ~ AVI + (Interpersonal_Justice), data=scales)
+summary(m2)
+m2
+
+m3 <- mediate(Organizational_Attraction ~ AVI + (Procedural_Justice), data=scales)
+summary(m3)
+
+m4 <- mediate(Organizational_Attraction ~ AVI + (Innovativeness), data=scales)
+summary(m4)
+
+m5 <- mediate(Organizational_Attraction ~ AVI + (Supportiveness), data=scales)
+summary(m5)
+
+m6 <- mediate(Organizational_Attraction ~ AVI + (Competiveness), data=scales)
+summary(m6)
+
+m7 <- mediate(Organizational_Attraction ~ AVI + (Social_Responsibility), data=scales)
+summary(m7)
+
+#multiple mediation model
+mm1 <- mediate(Organizational_Attraction ~ AVI + (Organizational_Justice) + (Innovativeness), data=scales)
+summary(mm1)
+.
+.
+.
+
+mm.max <- mediate(Organizational_Attraction ~ AVI + (Interpersonal_Justice) + (Procedural_Justice) + (Innovativeness) + (Social_Responsibility) + (Supportiveness) + (Competiveness), data=scales)
+summary(mm1)

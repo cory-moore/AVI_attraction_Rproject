@@ -1,0 +1,5 @@
+"0","m3 <- mediate(Attraction ~ AVI + (Responsibility), data=scales)
+"
+"2","Error in dev.off() : 
+  QuartzBitmap_Output - unable to open file '/Volumes/GoogleDrive/.shortcut-targets-by-id/1IlQLiYaXmZgqwVCZ1k2oNl1fpvmC_8q-/Org Psych Research Project/data analysis/AVI_attraction_Rproject/.Rproj.user/shared/notebooks/-prez.tables/1/36FA7E43E7F69BAD/cxrf7d2a96lx3_t/_rs_chunk_plot_001.png'
+"

@@ -1,0 +1,3 @@
+"0","max.mod <- lm(Attraction ~ AVI + Justice + Innovativeness + Supportiveness + Responsibility + Competitiveness, data = scales) "
+"2","Error in eval(predvars, data, env) : object 'Attraction' not found
+"

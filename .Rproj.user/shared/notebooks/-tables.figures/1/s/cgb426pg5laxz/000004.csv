@@ -1,0 +1,14 @@
+"0","#libraries"
+"0","library(psych)"
+"0","library(car)"
+"0","library(stargazer)"
+"0",""
+"0","#import dataframes"
+"0","items <- read.csv(""data/cleaned_itemdata.long.csv"", header=TRUE)"
+"2","Warning in file(file, ""rt"") :"
+"2","
+ "
+"2"," cannot open file 'data/cleaned_itemdata.long.csv': No such file or directory
+"
+"2","Error in file(file, ""rt"") : cannot open the connection
+"

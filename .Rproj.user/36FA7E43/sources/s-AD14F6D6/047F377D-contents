@@ -1,0 +1,65 @@
+---
+title: "tables.figures"
+author: "Cory Moore"
+date: "4/16/2022"
+output: HTML
+---
+
+```{r import, include=FALSE}
+#libraries
+library(psych)
+library(car)
+library(stargazer)
+library(dplyr)
+
+#import dataframes
+items <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/1IlQLiYaXmZgqwVCZ1k2oNl1fpvmC_8q-/Org Psych Research Project/data analysis/AVI_attraction_Rproject/data/cleaned_itemdata.long.csv")
+scales <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/1IlQLiYaXmZgqwVCZ1k2oNl1fpvmC_8q-/Org Psych Research Project/data analysis/AVI_attraction_Rproject/data/cleaned_scaledata_long.csv")
+
+```
+
+
+```{r alphas}
+#alphas
+```
+
+
+```{r descriptives}
+#descriptives
+a <- psych::describe(scales$procjust)
+b <- psych::describe(scales$interjust)
+c <- psych::describe(scales$orgjust)
+d <- psych::describe(scales$genatrct)
+e <- psych::describe(scales$intpurs)
+f <- psych::describe(scales$prest)
+g <- psych::describe(scales$orgatrct)
+h <- psych::describe(scales$compete)
+i <- psych::describe(scales$socresp)
+j <- psych::describe(scales$support)
+k <- psych::describe(scales$innovate)
+
+desc <- rbind(a,b,c,d,e,f,g,h,i,j,k)
+desc
+
+rownames(desc) = c("procjust","interjust","Organizational Justice","genatrct","intpurs","prest","Organizational Attraction","Competitiveness","Social Responsibility","Supportiveness","Innovativeness")
+
+desc <- as.data.frame(desc) %>% #remove columns
+  select(-c(vars, median,trimmed,mad,range,se))
+
+desc$n <- (desc$n/2)
+desc$n <- round((desc$n),0)
+desc <- round((desc),2)
+
+desc <- desc %>% slice(3, 7:11)
+
+desc <- rename(desc,
+               N = n,
+               Mean = mean,
+               "St. Dev." = sd,
+               Min = min,
+               Max = max,
+               Skew = skew,
+               Kurtosis = kurtosis)
+
+stargazer(desc)
+```

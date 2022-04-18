@@ -1,0 +1,188 @@
+#First, lets get familiar with the R Studio environment.
+#The top left box is where your syntax goes, it is the editor window.
+#You can write, edit, and save commands in this window. 
+#Think of the editor window as written instructions that the console carries out.
+
+#The bottom left box is whats known as the console window. This is where R actually does stuff (runs code). 
+#You can send commands to it, like "1+1" and it'll spit out an answer.
+#Anything you write in your editor window is eventually passed to the console window.
+
+#The top right box is called the workspace. Here you can see which data, objects, and values R has in its memory. You can view objects by clicking on them. 
+#You can also view your history, plots, and connections (don't worry about this). 
+#This is also where you can import datasets from. 
+
+
+#The bottom right box is the files/plots/packages/help window. Here you can open files, view plots, and install and load packages. 
+#As well as get help about functions. 
+
+##############################################
+
+#Basic commands
+
+#Calculator
+10 + 10
+
+60/5
+
+500^2
+
+#Create variables
+x <- 5
+y <- 25
+x
+x + y
+
+#vectors 
+v <- c(1, 2, 3, 4, 5)
+v
+z <- c(6, 7, 8, 9, 10)
+v + z
+w <- c(11, 12, 13, 14, 15)
+
+
+#dataframe
+t <- data.frame(v, z, w)
+
+
+#functions
+summary(t)
+mean(t$z)
+plot(t$z, t$v)
+plot(t$v, t$z)
+?plot()
+#################################################
+
+#Okay, so how do we load, or import, data into R?
+#There are a number of ways, but will start with the simplest
+#On the right side of the screen, click "Import Dataset" -> "From Text (base)"
+#Select the file, make sure headings is set to "Yes" and that "Strings as Factors" is NOT checked
+
+#You'll see some code that looks like this pop up.
+#Copy/paste it into the source file (here)
+
+Pokemon <- read.csv("/Volumes/GoogleDrive/.shortcut-targets-by-id/1vWDqJojoig5JxYelOR5O7o-U-YbiHeqr/Professional work/Doctoral work/a. Coursework/Advanced Methods in Psychology/Research 2. Collecting and analyzing observational data/Correlation and Regression Analysis/Pokemon.csv")
+
+#Our dataset is now called "Pokemon"
+#You can look at it by typing:  View(Pokemon)
+View(Pokemon)
+
+#Some questions we could ask:
+#Is there a correlation between HP and Attack?
+#The correlation analysis is "cor.test()" and it takes two items, the two variables you're correlating.
+#Typing "Pokemon$HP" tells the computer you want the "HP" variable in the "Pokemon" dataset.
+#Then, the comma in the cor.test() function tells the computer that you're going to give it the second variable.
+#If you're ever confused as to how a function works, you can always type a question mark and the name of the function
+#some cool help documentation will pop up.
+?cor.test()
+cor.test(Pokemon$HP, Pokemon$Attack)
+
+
+#Lets say we wanted to know something: Is there a correlation between what generation a pokemon comes from and if they're a 
+#legendary pokemon?
+#Here's a problem though, how do we handle data when its categorical?
+#Luckily, our data is whats called dichotomous. 
+#It means we only have two categories. A pokemon is either legendary or it isn't.
+#So instead of saying "Legendary" and "Not Legendary", 
+#we can represent the values as 1 and 0. 1 if its a legendary, 0 otherwise.
+#Once we do that, we can do whats called a point-biserial correlation. 
+#It works exactly the same as a regular correlation and the underlying math is the same, but its applied to categorical data.
+#Note: YOU CAN ONLY DO THIS FOR BINOMIAL OUTCOMES (2 categories)
+#The column for legendary is already coded as 0 and 1, so lets try it out.
+cor.test(Pokemon$Legendary, Pokemon$Generation)
+
+
+#Lets actually plot the data from our first correlation, HP and Attack.
+#R has a pretty easy to use plotting function
+plot(Pokemon$HP, Pokemon$Attack)
+#you can also add more information to the Plot function, to make it look a little nicer
+plot(Pokemon$HP, Pokemon$Attack, xlab="Hit Points", ylab="Attack Stat", pch=20)
+?plot()
+
+#Now lets say we want to create a correlation matrix to see all of our correlations
+#First, need to create subset of Pokemon dataframe because corr matrix functions do not like character variables
+#Below, created a new datafram that removed character variables
+NewPokemon <- subset(Pokemon, select=-c(Name,Type.1,Type.2, Pokedex.Number))
+
+#Now, we will install and load packages that allow us to create matrices
+install.packages("Hmisc")
+library(Hmisc)
+install.packages("corrplot")
+library(corrplot)
+
+#Here, we are creating a new object called cor.matrix  
+pokemon.cor.matrix <- rcorr(as.matrix(NewPokemon))
+pokemon.cor.matrix
+pokemon.cor.matrix$r
+
+#Now, we want to plot our matrix so we can visually see the direction, strength, and magnitude of the correlations in our dataframe
+
+
+#Then, we use the corrplot function to create out matrix
+corrplot(pokemon.cor.matrix$r, type="lower", tl.col="black", tl.srt=45)
+
+#################################################
+
+#What if we want to do a regression?
+#There are two steps to a regression in R.
+#First, you want to make the line itself AND save it somewhere
+myFirstRegression <- lm(HP~Attack, data=Pokemon)
+
+#So a few things are happening here. "lm(HP~Attack, data=Pokemon)" makes a regression line.
+# lm() is the function to make the line, "HP~Attack" says HP is my dependent variable, Attack is my independent variable
+#and "data = Pokemon" is there so you don't have to constantly type "Pokemon$". 
+
+#Once the line is made, we want to save it somewhere. So we're making a new object, and we're calling it "myFirstRegression".
+#The arrow "<-" tells R that you want to save your regression equation into this new object.
+#you can look at your coefficients by typing "myFirstRegression" into the R console
+
+#Regressions can also be sent to a new function, called "summary" which gives you a bunch of fun info!
+summary(myFirstRegression)
+
+
+#What does our regression look like, though?
+#Lets put the line on top of our scatterplot!
+plot(Pokemon$Attack,Pokemon$HP,  ylab="Hit Points", xlab="Attack Stat", pch=20) 
+abline(myFirstRegression)
+#Line too skinny? You can change that too
+
+
+plot(Pokemon$Attack,Pokemon$HP,  ylab="Hit Points", xlab="Attack Stat", pch=20) 
+abline(myFirstRegression, lwd=3) #"lwd" is short for line width. Bigger numbers = thicker lines
+  
+  plot(Pokemon$Attack,Pokemon$HP,  ylab="Hit Points", xlab="Attack Stat", pch=20) 
+  abline(myFirstRegression, lwd=3, col="red") #And now its a red line
+
+  
+##############################################
+  
+  
+  
+  
+  
+#Not covered in class, but might be useful:
+#A really useful package for descriptive statistics is the psych package.
+#Your first time using it on a computer, you'll have to install it.
+#Run this line of code only the first time you use it:
+install.packages("psych")
+
+#From then on, if you ever want to use it, you can just type the below when you open R the first time:
+library(psych)
+
+#So lets say we want some descriptives for Hit Points, but want to bin it by generation. Its pretty simple
+desc<-describeBy(Pokemon$HP, Pokemon$Type.1, mat=T)
+View(desc)
+
+
+#We can then use these to make a barplot!
+barplot(desc$mean, names.arg = desc$group1, las=2, ylab="Hit Points", ylim=c(0,120))
+
+#First item is bar height (desc$mean), second item is the column labels
+#las rotates the names so they fit
+#ylab labels for our  y axis
+#Ylim changes the range of the y axis so that it ranges from 0 to 120
+#We can also add things like colors using the "col" argument
+#First, lets list the colors we want.
+clrs<-c("Purple", "Black", "Red", "Yellow", "Pink", "Orange",
+        "Red", "Brown", "White", "Green", "Brown", "Blue", "Pink", "Purple",
+        "Black", "Gray", "White", "Blue")
+barplot(desc$mean, names.arg = desc$group1, las=2, ylab="Hit Points", ylim=c(0,120), col=clrs)
