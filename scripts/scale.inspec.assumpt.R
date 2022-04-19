@@ -225,37 +225,37 @@ rm(cfa1,cfa2,cfa3,spjs,oa,culture, study.cfa, scales.fa)
 ##### ASSUMPTIONS CHECK #####
 
 ##### examine distributions of variables
-hist(scales$procjust)
+hist(scales$procjust, breaks=20)
 densityPlot(scales$procjust)
 
-hist(scales$interjust) 
+hist(scales$interjust, breaks=20) 
 densityPlot(scales$interjust)
 
-hist(scales$orgjust)
+hist(scales$orgjust, breaks=20)
 densityPlot(scales$orgjust)
 
-hist(scales$genatrct) 
+hist(scales$genatrct, breaks=20) 
 densityPlot(scales$genatrct)
 
-hist(scales$intpurs) 
+hist(scales$intpurs, breaks=20) 
 densityPlot(scales$intpurs)
 
-hist(scales$prest) 
+hist(scales$prest, breaks=20) 
 densityPlot(scales$prest)
 
-hist(scales$orgatrct) #skewed, as are subscales
+hist(scales$orgatrct, breaks=20) #skewed, as are subscales
 densityPlot(scales$orgatrct)
 
-hist(scales$compete)
+hist(scales$compete, breaks=20)
 densityPlot(scales$compete)
 
-hist(scales$socresp)
+hist(scales$socresp, breaks=20)
 densityPlot(scales$socresp)
 
-hist(scales$support)
+hist(scales$support, breaks=20)
 densityPlot(scales$support)
 
-hist(scales$innovate)
+hist(scales$innovate, breaks=20)
 densityPlot(scales$innovate)
 
 
