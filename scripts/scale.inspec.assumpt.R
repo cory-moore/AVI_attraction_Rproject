@@ -32,71 +32,71 @@ Independence
 #### SCALE INSPECTION ####
 
 ## check reliabilities
-procjust.alpha.z <- select(items, 3,4,5,6,7,9,10,11) ## DO NOT USE
+procjust.alpha.z <- dplyr::select(items, 3,4,5,6,7,9,10,11) ## DO NOT USE
 alpha.pj <- psych::alpha(procjust.alpha.z)
 alpha.pj
 
-procjust.alpha <- select(items, 3,4,5,6,7,8,9,10) #removed ROA items (11) due to low item-total corr
+procjust.alpha <- dplyr::select(items, 3,4,5,6,7,8,9,10) #removed ROA items (11) due to low item-total corr
 a1 <- psych::alpha(procjust.alpha)
 a1
 alpha.pj <- as.data.frame(a1$total)
 rm(procjust.alpha, a1)
 
-interjust.alpha <- select(items,12,13,14,15,16,17,18,19,20)
+interjust.alpha <- dplyr::select(items,12,13,14,15,16,17,18,19,20)
 a2 <- psych::alpha(interjust.alpha)
 a2
 alpha.ij <- as.data.frame(a2$total)
 rm(interjust.alpha, a2)
 
-orgjust.alpha <- select(items, 3,4,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20) ##removed ROA item (11)
+orgjust.alpha <- dplyr::select(items, 3,4,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20) ##removed ROA item (11)
 a3 <- psych::alpha(orgjust.alpha)
 a3
 alpha.oj <- as.data.frame(a3$total)
 rm(orgjust.alpha, a3)
 
-genatrct.alpha <-select(items,21,22,23,24,25)   
+genatrct.alpha <-dplyr::select(items,21,22,23,24,25)   
 a4 <- psych::alpha(genatrct.alpha) 
 a4
 alpha.ga <- as.data.frame(a4$total)
 rm(genatrct.alpha, a4)
 
-intpurs.alpha <- select(items, 26,27,28,29,30)
+intpurs.alpha <- dplyr::select(items, 26,27,28,29,30)
 a5<- psych::alpha(intpurs.alpha)
 a5
 alpha.ip <- as.data.frame(a5$total)
 rm(intpurs.alpha, a5)
 
-prest.alpha <- select(items,31,32,33,34,35)
+prest.alpha <- dplyr::select(items,31,32,33,34,35)
 a6 <- psych::alpha(prest.alpha)
 a6
 alpha.prest <- as.data.frame(a6$total)
 rm(prest.alpha,a6)
 
-orgatrct.alpha <- select(items, 21,22,23,24,25,26,27,28,29,30, 31,32,33,34,35)
+orgatrct.alpha <- dplyr::select(items, 21,22,23,24,25,26,27,28,29,30, 31,32,33,34,35)
 a7 <- psych::alpha(orgatrct.alpha, check.keys = TRUE) 
 a7
 alpha.oa <- as.data.frame(a7$total)
 rm(orgatrct.alpha, a7)
 
-compete.alpha <- select(items, 36,37,38,39)
+compete.alpha <- dplyr::select(items, 36,37,38,39)
 a8 <- psych::alpha(compete.alpha)
 a8
 alpha.c <- as.data.frame(a8$total)
 rm(compete.alpha, a8)
 
-socresp.alpha <- select(items, 40,41,42,43)
+socresp.alpha <- dplyr::select(items, 40,41,42,43)
 a9 <- psych::alpha(socresp.alpha)
 a9
 alpha.sr <- as.data.frame(a9$total)
 rm(socresp.alpha,a9)
 
-support.alpha <- select(items, 44,45,46,47)
+support.alpha <- dplyr::select(items, 44,45,46,47)
 a10 <- psych::alpha(support.alpha)
 a10
 alpha.s <- as.data.frame(a10$total)
 rm(support.alpha,a10)
 
-innovate.alpha <- select(items, 48,49,50,51)
+innovate.alpha <- dplyr::select(items, 48,49,50,51)
 a11 <- psych::alpha(innovate.alpha)
 a11
 alpha.i <- as.data.frame(a11$total)
@@ -183,9 +183,9 @@ rm(a,b,c,d,e,f,g,h,i,j,k, desc)
 "need to work on interpretation of findings"
 
 #first need to subset 'items' dataframe into scale item dataframes
-spjs <- select(items, 3:10, 12:20)
-oa <- select(items, 21:35)
-culture <- select(items, 36:51) 
+spjs <- dplyr::select(items, 3:10, 12:20)
+oa <- dplyr::select(items, 21:35)
+culture <- dplyr::select(items, 36:51) 
 
 fa.parallel(spjs)
 cfa1 <- fa(spjs, nfactors=2, rotate="oblimin") #best fits 3 factors
@@ -206,7 +206,21 @@ cfa3
 cfa3$loadings
 fa.diagram(cfa3)
 
-rm(cfa1,cfa2,cfa3,spjs,oa,culture)
+# data frame to factor analyze # of variables in study 
+scales.fa <- scales %>% dplyr::select(AVI.id,
+                                      orgjust, 
+                                      orgatrct,
+                                      compete,
+                                      socresp,
+                                      support,
+                                      innovate)
+# CFA of study variables
+fa.parallel(scales.fa)
+study.cfa <- fa(scales.fa, nfactors=7, rotate="oblimin")
+study.cfa
+
+
+rm(cfa1,cfa2,cfa3,spjs,oa,culture, study.cfa, scales.fa)
 
 ##### ASSUMPTIONS CHECK #####
 
