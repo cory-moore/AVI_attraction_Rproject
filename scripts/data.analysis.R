@@ -200,6 +200,26 @@ summary(mod11)
 tidy.mod11 <- tidy(mod11)
 
 
+# regressions controlling for Justice and/or AVI
+con1 <- lm(Attraction ~ Competitiveness + Justice, data=scales)
+summary(con1)
+
+con2 <- lm(Attraction ~ Innovativeness + Justice, data=scales)
+summary(con2)
+
+con3 <- lm(Attraction ~ Responsibility + Justice, data=scales)
+summary(con3)
+
+con4 <- lm(Attraction ~ Supportiveness + Justice, data=scales)
+summary(con4)
+
+con5 <- lm(Attraction ~ AVI + Justice + Competitiveness, data=scales)
+summary(con5)
+
+con6 <- lm(Attraction ~ AVI + Innovativeness + Justice, data=scales)
+summary(con6)
+
+
 #Excel
 write.xlsx(as.data.frame(tidy.mod1), file="output/output.xlsx",sheetName="lm1.justice",col.names=TRUE,row.names=FALSE,append=TRUE)
 
@@ -224,6 +244,7 @@ write.xlsx(as.data.frame(tidy.mod10), file="output/output.xlsx",sheetName="lm10.
 write.xlsx(as.data.frame(tidy.mod11), file="output/output.xlsx",sheetName="lm11.attract6",col.names=TRUE,row.names=FALSE,append=TRUE)
 
 write.xlsx(as.data.frame(tidy.mod.max), file="output/output.xlsx",sheetName="lm.max.attract",col.names=TRUE,row.names=FALSE,append=TRUE)
+
 
 
 
