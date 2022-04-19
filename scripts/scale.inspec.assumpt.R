@@ -246,7 +246,7 @@ densityPlot(scales$innovate)
 
 
 # QQ plot  
-scales.no.na <- na.omit(scales) #omitting NA cases for tests - might consider doing this during data prep too
+scales.no.na <- na.omit(scales) 
 
 lm1 <- lm(orgatrct ~ AVI.id, data=scales.no.na)
 plot(orgatrct ~ AVI.id, data=scales.no.na) 
@@ -361,6 +361,8 @@ summary(collinear6)
 rm(collinear, collinear1, collinear2, collinear3, collinear4, collinear5, collinear6)
 
 
-## WHAT TO ABOUT COLLINEARITY?? ##
+## VIF
 
+vif <- lm(orgjust ~ AVI.id + compete + support + socresp + innovate, data=scales)
+car::vif(vif)
 
