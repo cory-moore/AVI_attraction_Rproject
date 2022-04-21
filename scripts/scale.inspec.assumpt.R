@@ -11,6 +11,7 @@ library(papaja)
 #import data
 items <- read.csv("data/cleaned_itemdata.long.csv", header=TRUE)
 scales <- read.csv("data/cleaned_scaledata_long.csv", header=TRUE)
+items.wide <- read.csv("data/cleaned_itemdata.wide.csv", header=TRUE)
 
 
 "##########################
@@ -32,6 +33,8 @@ Independence
 #### SCALE INSPECTION ####
 
 ## check reliabilities
+
+#alpha
 procjust.alpha.z <- dplyr::select(items, 3,4,5,6,7,9,10,11) ## DO NOT USE
 alpha.pj <- psych::alpha(procjust.alpha.z)
 alpha.pj
@@ -110,6 +113,11 @@ alphas <- rbind(alpha.pj,alpha.ij,alpha.oj,alpha.ga,alpha.ip,alpha.prest,alpha.o
 write.xlsx(alphas, file="output/output.xlsx",sheetName="alphas",col.names=TRUE,row.names=FALSE,append=FALSE)
 
 rm(alpha.c,alpha.ga,alpha.i,alpha.ij,alpha.ip,alpha.oa,alpha.oj,alpha.pj,alpha.prest,alpha.s,alpha.sr,alphas,procjust.alpha.z)
+
+
+#test-retest (needs work)
+cor(as.data.frame(items.wide[,1:18]), as.data.frame(items.wide[,50:67]))
+
 
 ##### Boxplots of primary variables by condition
 ggplot(scales, aes(x=condition, y=orgjust, fill=condition)) +
