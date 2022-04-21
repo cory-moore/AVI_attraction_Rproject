@@ -18,6 +18,33 @@ desc_orgatrct
 rm(desc_orgatrct, desc_orgjust)
 
 
+##### Boxplots of primary variables by condition
+ggplot(scales, aes(x=condition, y=orgjust, fill=condition)) +
+  geom_boxplot() +
+  ggtitle("Organization Justice Scores by condition")
+
+ggplot(scales, aes(x=condition, y=orgatrct, fill=condition)) +
+  geom_boxplot() +
+  ggtitle("Organization Attraction Scores by condition")
+
+ggplot(scales, aes(x=condition, y=innovate, fill=condition)) +
+  geom_boxplot() +
+  ggtitle("Innovativeness Scores by condition")
+
+ggplot(scales, aes(x=condition, y=support, fill=condition)) +
+  geom_boxplot() +
+  ggtitle("Supportiveness Scores by condition")
+
+ggplot(scales, aes(x=condition, y=compete, fill=condition)) +
+  geom_boxplot() +
+  ggtitle("Competiveness Scores by condition")
+
+ggplot(scales, aes(x=condition, y=socresp, fill=condition)) +
+  geom_boxplot() +
+  ggtitle("Social Responsibility Scores by condition")
+
+  
+
 ###### ANOVAs #####
 aov1<- aov(Organizational_Justice ~ AVI + Error(id/AVI), data = scales) #Error(id/AVI) makes this a within-subjects ANOVA
 summary(aov1)

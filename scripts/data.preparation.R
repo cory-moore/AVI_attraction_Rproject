@@ -68,7 +68,7 @@ df <- df %>%
             GROUP))
 
 
-## DELETE CASES THAT FAIL ATCs ##             <------ consider changing to 3 out of 4 (the breakdown is odd: ~33 missed                                                         AT1, ~15 missed ATC2, ~3-5 missed ATC4 and OCP1B_17 respectively)
+## DELETE CASES THAT FAIL ATCs ##  <------ consider changing to 3 out of 4 (the breakdown is odd: ~33 missed AT1, ~15 missed ATC2, ~3-5 missed ATC4 and OCP1B_17 respectively)
 df <- subset(df, 
                ATC1=="Strongly agree" & 
                ATC2=="Somewhat disagree" & 

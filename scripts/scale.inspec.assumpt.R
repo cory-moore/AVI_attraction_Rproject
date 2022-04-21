@@ -7,6 +7,7 @@ library(apaTables)
 library(moments)
 library(xlsx)
 library(papaja)
+library(lavaan)
 
 #import data
 items <- read.csv("data/cleaned_itemdata.long.csv", header=TRUE)
@@ -16,8 +17,8 @@ scales.wide <- read.csv("data/cleaned_scaledata_wide.csv", header=TRUE)
 
 "##########################
 INSPECT SCALES:
-reliability
 descriptive stats (means. SDs, skew, and kurtosis)
+reliability
 factor analysis
 
 ASSUMPTIONS CHECK:
@@ -29,6 +30,49 @@ Normality
 Independence
 -multicollinearity (VIF)
 ###########################"
+
+##### descriptive statistics
+a <- psych::describe(scales$procjust)
+describeBy(scales$procjust, scales$condition)
+
+b <- psych::describe(scales$interjust)
+describeBy(scales$interjust, scales$condition)
+
+c <- psych::describe(scales$orgjust)
+describeBy(scales$orgjust, scales$condition)
+
+d <- psych::describe(scales$genatrct)
+describeBy(scales$genatrct, scales$condition)
+
+e <- psych::describe(scales$intpurs)
+describeBy(scales$intpurs, scales$condition)
+
+f <- psych::describe(scales$prest)
+describeBy(scales$prest, scales$condition)
+
+g <- psych::describe(scales$orgatrct)
+describeBy(scales$orgatrct, scales$condition)
+
+h <- psych::describe(scales$compete)
+describeBy(scales$compete, scales$condition)
+
+i <- psych::describe(scales$socresp)
+describeBy(scales$socresp, scales$condition)
+
+j <- psych::describe(scales$support)
+describeBy(scales$support, scales$condition)
+
+k <- psych::describe(scales$innovate)
+describeBy(scales$innovate, scales$condition)
+
+desc <- rbind(a,b,c,d,e,f,g,h,i,j,k)
+desc
+
+#export to excel file
+write.xlsx(desc, file="output/output.xlsx",sheetName="descriptives",col.names=TRUE,row.names=FALSE,append=TRUE)
+
+rm(a,b,c,d,e,f,g,h,i,j,k, desc)
+
 
 #### SCALE INSPECTION ####
 
@@ -124,76 +168,9 @@ cor.test(scales.wide$A_socresp, scales.wide$B_socresp)
 cor.test(scales.wide$A_support, scales.wide$B_support)
 cor.test(scales.wide$A_innovate, scales.wide$B_innovate)
 
-##### Boxplots of primary variables by condition
-ggplot(scales, aes(x=condition, y=orgjust, fill=condition)) +
-  geom_boxplot() +
-  ggtitle("Organization Justice Scores by condition")
-
-ggplot(scales, aes(x=condition, y=orgatrct, fill=condition)) +
-  geom_boxplot() +
-  ggtitle("Organization Attraction Scores by condition")
-
-ggplot(scales, aes(x=condition, y=innovate, fill=condition)) +
-  geom_boxplot() +
-  ggtitle("Innovativeness Scores by condition")
-
-ggplot(scales, aes(x=condition, y=support, fill=condition)) +
-  geom_boxplot() +
-  ggtitle("Supportiveness Scores by condition")
-
-ggplot(scales, aes(x=condition, y=compete, fill=condition)) +
-  geom_boxplot() +
-  ggtitle("Competiveness Scores by condition")
-
-ggplot(scales, aes(x=condition, y=socresp, fill=condition)) +
-  geom_boxplot() +
-  ggtitle("Social Responsibility Scores by condition")
-
-##### descriptive statistics
-a <- psych::describe(scales$procjust)
-describeBy(scales$procjust, scales$condition)
-
-b <- psych::describe(scales$interjust)
-describeBy(scales$interjust, scales$condition)
-
-c <- psych::describe(scales$orgjust)
-describeBy(scales$orgjust, scales$condition)
-
-d <- psych::describe(scales$genatrct)
-describeBy(scales$genatrct, scales$condition)
-
-e <- psych::describe(scales$intpurs)
-describeBy(scales$intpurs, scales$condition)
-
-f <- psych::describe(scales$prest)
-describeBy(scales$prest, scales$condition)
-
-g <- psych::describe(scales$orgatrct)
-describeBy(scales$orgatrct, scales$condition)
-
-h <- psych::describe(scales$compete)
-describeBy(scales$compete, scales$condition)
-
-i <- psych::describe(scales$socresp)
-describeBy(scales$socresp, scales$condition)
-
-j <- psych::describe(scales$support)
-describeBy(scales$support, scales$condition)
-
-k <- psych::describe(scales$innovate)
-describeBy(scales$innovate, scales$condition)
-
-desc <- rbind(a,b,c,d,e,f,g,h,i,j,k)
-desc
-
-#export to excel file
-write.xlsx(desc, file="output/output.xlsx",sheetName="descriptives",col.names=TRUE,row.names=FALSE,append=TRUE)
-
-rm(a,b,c,d,e,f,g,h,i,j,k, desc)
 
 
 ### CFA for scales   
-"need to work on interpretation of findings"
 
 #first need to subset 'items' dataframe into scale item dataframes
 spjs <- dplyr::select(items, 3:10, 12:20)
@@ -201,15 +178,28 @@ oa <- dplyr::select(items, 21:35)
 culture <- dplyr::select(items, 36:51) 
 
 fa.parallel(spjs)
-cfa1 <- fa(spjs, nfactors=2, rotate="oblimin") #best fits 3 factors
+cfa1 <- fa(spjs, nfactors=2, rotate="oblimin") #best fits 7 factors (one for each subscale)
 cfa1
 cfa1$loadings
+cfa1$dof
+cfa1$PVAL
+cfa1$STATISTIC #model chi
+cfa1$RMSEA
+cfa1$rms
+cfa1$fit
 fa.diagram(cfa1)
+summary(cfa1)
+
 
 fa.parallel(oa)
-cfa2 <- fa(oa, nfactors=1, rotate="oblimin") #could not fit 3-factor model, strongly 1
+cfa2 <- fa(oa, nfactors=3, rotate="oblimin") #could not fit 3-factor model, strongly 1
 cfa2
 cfa2$loadings
+cfa2$dof
+cfa2$PVAL
+cfa2$STATISTIC #model chi
+cfa2$RMSEA
+cfa2$rms
 fa.diagram(cfa2)
 
 
@@ -217,6 +207,11 @@ fa.parallel(culture)
 cfa3 <- fa(culture, nfactors=4, rotate="oblimin") ##messy 4-factor fit
 cfa3
 cfa3$loadings
+cfa3$dof
+cfa3$PVAL
+cfa3$STATISTIC #model chi
+cfa3$RMSEA
+cfa3$rms
 fa.diagram(cfa3)
 
 # data frame to factor analyze # of variables in study 
