@@ -11,7 +11,7 @@ library(papaja)
 #import data
 items <- read.csv("data/cleaned_itemdata.long.csv", header=TRUE)
 scales <- read.csv("data/cleaned_scaledata_long.csv", header=TRUE)
-items.wide <- read.csv("data/cleaned_itemdata.wide.csv", header=TRUE)
+scales.wide <- read.csv("data/cleaned_scaledata_wide.csv", header=TRUE)
 
 
 "##########################
@@ -115,9 +115,14 @@ write.xlsx(alphas, file="output/output.xlsx",sheetName="alphas",col.names=TRUE,r
 rm(alpha.c,alpha.ga,alpha.i,alpha.ij,alpha.ip,alpha.oa,alpha.oj,alpha.pj,alpha.prest,alpha.s,alpha.sr,alphas,procjust.alpha.z)
 
 
-#test-retest (needs work)
-cor(as.data.frame(items.wide[,1:18]), as.data.frame(items.wide[,50:67]))
-
+#test-retest (if these are done correctly, test-retest reliability is not good
+#maybe not the best indicator of reliability given different treatments for the conditions
+cor.test(scales.wide$A_orgjust, scales.wide$B_orgjust)
+cor.test(scales.wide$A_orgatrct, scales.wide$B_orgatrct)
+cor.test(scales.wide$A_compete, scales.wide$B_compete)
+cor.test(scales.wide$A_socresp, scales.wide$B_socresp)
+cor.test(scales.wide$A_support, scales.wide$B_support)
+cor.test(scales.wide$A_innovate, scales.wide$B_innovate)
 
 ##### Boxplots of primary variables by condition
 ggplot(scales, aes(x=condition, y=orgjust, fill=condition)) +
