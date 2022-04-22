@@ -274,16 +274,26 @@ lm1 <- lm(orgatrct ~ AVI.id, data=scales.no.na)
 plot(orgatrct ~ AVI.id, data=scales.no.na) 
 plot(lm1)
 summary(lm1)
+plot(resid(lm1), xlab = "Order of observations", ylab = "residuals")
+hist(resid(lm1), main = "Bin width = 0.01", xlab = "Residuals")
+qqnorm(resid(lm1))
+qqline(resid(lm1))
 
 lm2 <- lm(orgjust ~ AVI.id, data=scales.no.na)
 plot(orgjust ~ AVI.id, data=scales.no.na) 
 plot(lm2)
 summary(lm2)
+plot(resid(lm2))
+hist(resid(lm2))
+qqnorm(resid(lm2))
+qqline(resid(lm2))
 
 lm3 <- lm(innovate ~ AVI.id, data= scales.no.na)
 plot(innovate ~ AVI.id, data=scales.no.na) 
 plot(lm3)
 summary(lm3)
+qqnorm(resid(lm3))
+qqline(resid(lm3))
 
 lm4 <- lm(support ~ AVI.id, data= scales.no.na)
 plot(support ~ AVI.id, data=scales.no.na) 
@@ -305,39 +315,55 @@ plot(orgatrct ~ orgjust, data=scales.no.na)
 abline(lm7, col="red")
 plot(lm7)
 summary(lm7)
+plot(resid(lm7))
+hist(resid(lm7))
+qqnorm(resid(lm7))
+qqline(resid(lm7))
 
 lm8 <- lm(orgatrct ~ innovate, data=scales.no.na)
 plot(orgatrct ~ jitter(innovate,2), data=scales.no.na)
 abline(lm8, col="red")
 plot(lm8)
 summary(lm8)
+plot(resid(lm8))
+hist(resid(lm8))
 
 lm9 <- lm(orgatrct ~ compete, data=scales.no.na)
 plot(orgatrct ~ jitter(compete,2), data=scales.no.na)
 abline(lm9, col="red")
 plot(lm9)
 summary(lm9)
+plot(resid(lm9))
+hist(resid(lm9))
 
 lm10 <- lm(orgatrct ~ support, data=scales.no.na)
 plot(orgatrct ~ jitter(support,2), data=scales.no.na)
 abline(lm10, col="red")
 plot(lm10)
 summary(lm10)
+plot(resid(lm10))
+hist(resid(lm10))
+qqnorm(resid(lm10))
+qqline(resid(lm10))
 
 lm11 <- lm(orgatrct ~ socresp, data=scales.no.na)
 plot(orgatrct ~ jitter(socresp,2), data=scales.no.na)
 abline(lm11, col="red")
 plot(lm11)
 summary(lm11)
+plot(resid(lm11))
+hist(resid(lm11))
 
 lm.max <- lm(orgatrct ~ orgjust + compete + support + socresp + innovate + AVI.id, data=scales.no.na)
 summary(lm.max) ## interesting output 
+plot(lm.max)
 
 rm(lm1, lm2, lm3, lm4, lm5, lm6, lm6, lm7, lm8, lm9, lm10, lm11,lm.max)
 
 
+## CONSIDER REMOVING PROBLEMATIC OBSERVATIONS LATER
 
-## investigate collinearity   #Def some issues to address here ## still need VIF
+## investigate collinearity   
 collinear <- lm(orgjust ~ innovate, data=scales.no.na)
 plot(orgatrct ~ jitter(innovate,2), data=scales.no.na)
 abline(collinear, col="red")
