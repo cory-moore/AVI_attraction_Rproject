@@ -192,7 +192,7 @@ summary(cfa1)
 
 
 fa.parallel(oa)
-cfa2 <- fa(oa, nfactors=3, rotate="oblimin") #could not fit 3-factor model, strongly 1
+cfa2 <- fa(oa, nfactors=1, rotate="oblimin") #could not fit 3-factor model, strongly 1
 cfa2
 cfa2$loadings
 cfa2$dof
