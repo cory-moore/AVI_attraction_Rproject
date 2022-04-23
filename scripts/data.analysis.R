@@ -10,6 +10,7 @@ library(ggcorrplot)
 library(xlsx)
 library(mediation)
 library(tidyr)
+library(lm.beta)
 
 #import data
 scales <- read.csv("data/cleaned_scaledata_long.csv", header=TRUE)
@@ -157,6 +158,7 @@ tidy.mod.max <- tidy(max.mod)
 
 mod1 <- lm(Justice ~ AVI, data=scales)
 summary(mod1)
+lm.beta(mod1)
 tidy.mod1 <- tidy(mod1)
 
 mod2 <- lm(Competitiveness ~ AVI, data=scales)
@@ -263,6 +265,7 @@ mod16 <- lm(Attraction ~ AVI + Justice, data=scales)
 # x = AVI, m = OCP dimensions, y = attraction
 me1 <- mediation::mediate(mod2, mod12, treat="AVI", mediator="Competitiveness",sims=500, dropobs=TRUE) 
 summary(me1)
+lm.beta(me1)
 tidy.me1 <- tidy(me1, conf.int = TRUE, conf.level = .95)
 
 me2 <- mediation::mediate(mod3, mod13, treat="AVI", mediator="Responsibility",sims=500, dropobs=TRUE)
